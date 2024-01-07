@@ -1,0 +1,19 @@
+services:
+  angles-api:
+    build:
+      context: api
+    healthcheck:
+      test: ["CMD", "curl", "-sSf", "http://localhost:3000"]
+      interval: "5s"
+      retries: 3
+
+  nginx-proxy:
+    image: docker.io/nginx:mainline
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./images:/public/images
+    depends_on:
+      angles-api:
+        condition: service_healthy
